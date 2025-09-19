@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
-project(Lab1)
+cmake_minimum_required(VERSION 3.10)
+
+project(Lab1 VERSION 1.0)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -11,7 +12,7 @@ set(SFML_BUILD_DOC OFF)
 set(SFML_BUILD_TESTS OFF)
 
 # add SFML as subdirectory 
-add_subdirectory(SFML)
+# add_subdirectory(SFML)
 
 # Define a common output directory
 set(COMMON_OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
