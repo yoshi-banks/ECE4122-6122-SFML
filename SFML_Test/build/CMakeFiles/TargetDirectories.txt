@@ -1,0 +1,3 @@
+/home/joshua/ECE6122/SFML_Test/build/CMakeFiles/rebuild_cache.dir
+/home/joshua/ECE6122/SFML_Test/build/CMakeFiles/edit_cache.dir
+/home/joshua/ECE6122/SFML_Test/build/CMakeFiles/MyProject.dir

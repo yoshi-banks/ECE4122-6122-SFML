@@ -1,0 +1,1 @@
+./build/output/bin/Lab1
