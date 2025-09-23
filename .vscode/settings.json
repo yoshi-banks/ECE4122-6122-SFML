@@ -60,17 +60,12 @@
     "thread": "cpp",
     "cinttypes": "cpp",
     "typeinfo": "cpp",
-    "list": "cpp"
+    "list": "cpp",
+    "bitset": "cpp"
   },
   "cmake.sourceDirectory": "/home/joshua/ECE6122/Lab1",
   // The order to use for the file comment. Values can be used multiple times. Valid values are shown in default setting.
-  "doxdocgen.file.fileOrder": [
-    "author",
-    "custom",
-    "date",
-    "empty",
-    "brief",
-  ],
+  "doxdocgen.file.fileOrder": ["author", "custom", "date", "empty", "brief"],
 
   // The template for the file parameter in Doxygen.
   "doxdocgen.file.fileTemplate": "@file {name}",
@@ -103,5 +98,5 @@
   "doxdocgen.generic.linesToGet": 60,
 
   // Additional file documentation. One tag per line will be added. Can template `{year}`, `{date}`, `{author}`, `{email}` and `{file}`. You have to specify the prefix.
-  "doxdocgen.file.customTag": ["Class: ECE6122 (Q)"],
+  "doxdocgen.file.customTag": ["Class: ECE6122 (Q)"]
 }
