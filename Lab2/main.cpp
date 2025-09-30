@@ -18,6 +18,10 @@ int WINDOW_WIDTH_DEFAULT = 800;
 int WINDOW_HEIGHT_DEFAULT = 600;
 std::string PROCESSING_TYPE_DEFAULT = "THRD";
 
+/**
+ * @brief: Configuration structure to hold command line arguments
+ * 
+ */
 struct Config
 {
     int numThreads = NUM_THREADS_DEFAULT;
@@ -27,6 +31,13 @@ struct Config
     std::string processingType = PROCESSING_TYPE_DEFAULT;
 };
 
+/**
+ * @brief: Parse command line arguments
+ * 
+ * @param argc number of arguments
+ * @param argv character array of arguments
+ * @return Config 
+ */
 Config parseArguments(int argc, char* argv[])
 {
     Config config;
@@ -129,6 +140,13 @@ Config parseArguments(int argc, char* argv[])
     return config;
 }
 
+/**
+ * @brief: Main function
+ * 
+ * @param argc number of arguments
+ * @param argv character array of arguments
+ * @return int 
+ */
 int main(int argc, char* argv[])
 {
     Config config = parseArguments(argc, argv);
