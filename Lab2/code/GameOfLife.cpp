@@ -25,6 +25,8 @@ GameOfLife::GameOfLife(int numThreads, int cellSize, int windowWidth, int window
     , numThreads(numThreads)
     , processingType(processingType)
     , generationCount(0)
+    , stopPool(false)
+    , activeTasks(0)
 {
     gridWidthSize = windowWidth / cellSize;
     gridHeightSize = windowHeight / cellSize;
@@ -37,6 +39,19 @@ GameOfLife::GameOfLife(int numThreads, int cellSize, int windowWidth, int window
     cellShape.setFillColor(sf::Color::White);
 
     initializeGrid();
+
+    if (processingType == "THRD")
+    {
+        initializeThreadPool();
+    }
+}
+
+GameOfLife::~GameOfLife()
+{
+    if (processingType == "THRD")
+    {
+        shutdownThreadPool();
+    }
 }
 
 /**
@@ -125,19 +140,14 @@ void GameOfLife::processSequential()
  */
 void GameOfLife::processWithThreads()
 {
-    // create a vector of threds to process rows in parallel
-    std::vector<std::thread> threads;
     int rowsPerThread = gridHeightSize / numThreads;
 
     for (int t = 0; t < numThreads; ++t)
     {
-        // have start row be index * rowsPerThread
         int startRow = t * rowsPerThread;
-        // have end row be (index + 1) * rowsPerThread unless it's the last thread of the vector then have it go to the end of the grid
         int endRow = (t == numThreads - 1) ? gridHeightSize : (t + 1) * rowsPerThread;
 
-        // emplace thread lambda function function to process a chunk of rows
-        threads.emplace_back([this, startRow, endRow]()
+        enqueueTask([this, startRow, endRow]()
         {
             for (int y = startRow; y < endRow; ++y)
             {
@@ -159,11 +169,7 @@ void GameOfLife::processWithThreads()
         });
     }
 
-    // Run theads and wait for them all to finish
-    for (auto& thread : threads)
-    {
-        thread.join();
-    }
+    waitForCompletion();
 }
 
 /**
@@ -204,7 +210,6 @@ void GameOfLife::processWithOpenMP()
 void GameOfLife::nextGeneration()
 {
     // Start timing
-
     std::chrono::_V2::system_clock::time_point start;
     std::chrono::_V2::system_clock::time_point end;
     if (processingType == "SEQ")
@@ -326,4 +331,79 @@ void GameOfLife::run()
         render();
     }
 }
+
+void GameOfLife::initializeThreadPool()
+{
+    stopPool = false;
+    activeTasks = 0;
+
+    for (int i = 0; i < numThreads; ++i)
+    {
+        threadPool.emplace_back(&GameOfLife::workerThread, this);
+    }
+}
+
+void GameOfLife::shutdownThreadPool()
+{
+    {
+        std::unique_lock<std::mutex> lock(queueMutex);
+        stopPool = true;
+    }
+    condition.notify_all();
+
+    for (auto& thread : threadPool)
+    {
+        if (thread.joinable())
+        {
+            thread.join();
+        }
+    }
+}
+
+void GameOfLife::workerThread()
+{
+    while (true)
+    {
+        std::function<void()> task;
+        {
+            std::unique_lock<std::mutex> lock(queueMutex);
+            condition.wait(lock, [this]() { return stopPool || !taskQueue.empty(); });
+
+            if (stopPool && taskQueue.empty())
+            {
+                return;
+            }
+
+            if (!taskQueue.empty())
+            {
+                task = std::move(taskQueue.front());
+                taskQueue.pop();
+                activeTasks++;
+            }
+        }
+
+        if (task)
+        {
+            task();
+            activeTasks--;
+            condition.notify_all();
+        }
+    }
+}
+
+void GameOfLife::enqueueTask(const std::function<void()> task)
+{
+    {
+        std::unique_lock<std::mutex> lock(queueMutex);
+        taskQueue.push(std::move(task));
+    }
+    condition.notify_one();
+}
+
+void GameOfLife::waitForCompletion()
+{
+    std::unique_lock<std::mutex> lock(queueMutex);
+    condition.wait(lock, [this]() { return taskQueue.empty() && activeTasks == 0; });
+}
+
 

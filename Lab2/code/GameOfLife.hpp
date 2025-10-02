@@ -34,6 +34,11 @@
 #include <cstring>
 #include <omp.h>
 #include <SFML/Graphics.hpp>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+#include <atomic>
 
 class GameOfLife
 {
@@ -59,8 +64,17 @@ class GameOfLife
         sf::RenderWindow window;
         sf::RectangleShape cellShape;
 
+        // Thread pool for std::thread
+        std::vector<std::thread> threadPool;
+        std::queue<std::function<void()>> taskQueue;
+        std::mutex queueMutex;
+        std::condition_variable condition;
+        std::atomic<bool> stopPool;
+        std::atomic<int> activeTasks;
+
     public:
         GameOfLife(int numThreads, int cellSize, int windowWidth, int windowHeight, const std::string& threadingType);
+        ~GameOfLife();
         void run();
 
     private:
@@ -73,4 +87,11 @@ class GameOfLife
         void processWithThreads();
         void processWithOpenMP();
         void nextGeneration();
+
+        // Thread pool management
+        void initializeThreadPool();
+        void shutdownThreadPool();
+        void workerThread();
+        void enqueueTask(const std::function<void()> task);
+        void waitForCompletion();
 };
