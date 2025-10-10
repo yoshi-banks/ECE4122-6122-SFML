@@ -4,6 +4,12 @@ cmake_minimum_required(VERSION 3.10)
 # Project name and version
 project(Tutorials VERSION 1.0)
 
+# Set policy for OpenGL to suppress warning
+set(OpenGL_GL_PREFERENCE GLVND)
+
+# Find OpenGL
+find_package(OpenGL REQUIRED)
+
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -25,10 +31,19 @@ elseif(UNIX)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${COMMON_OUTPUT_DIR}/lib")  # For static libraries
 endif()
 
+# Don't build GLFW examples, tests, or documentation
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+
+# Build ogl code
+add_subdirectory(external)
+
 
 add_subdirectory(SFML)
 # add_subdirectory(Lab1)
-add_subdirectory(Lab2)
+# add_subdirectory(Lab2)
+add_subdirectory(Lab3)
 # add_subdirectory(Chapter01)
 # add_subdirectory(Chapter05)
 # add_subdirectory(Chapter07)
