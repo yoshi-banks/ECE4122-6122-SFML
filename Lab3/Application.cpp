@@ -241,10 +241,17 @@ void Application::render()
         float angle = i * (360.0f / 8.0f);
         glm::mat4 modelMatrix = glm::mat4(1.0);
 
+        // Rotate each head around Z to make a circle
         modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0, 0, 1));
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(radius, 0, 0.8f));
+        // Move head outward from center
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(radius, 0, 0));
+        // Tilt head upright
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(1, 0, 0));
+        // Move head up to touch z=0 plane
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 1, 0));
+        // rotate to face outwards (pi/2 about y axis)
         modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0, 1, 0));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f + angle), glm::vec3(1, 0, 0));
+
 
         glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
 
