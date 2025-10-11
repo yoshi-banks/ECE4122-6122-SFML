@@ -38,6 +38,7 @@ class Application
         GLuint matrixID, viewMatrixID, modelMatrixID;
         GLuint lightID, lightEnabledID;
         GLuint texture, textureID;
+        GLuint useTextureID, solidColorID;
 
         // Suzanne buffers
         GLuint vertexBuffer, uvBuffer, normalBuffer, elementBuffer;

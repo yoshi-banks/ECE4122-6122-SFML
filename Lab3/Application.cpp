@@ -86,6 +86,8 @@ void Application::initialize()
     lightID = glGetUniformLocation(programID, "LightPosition_worldspace");
     lightEnabledID = glGetUniformLocation(programID, "LightEnabled");
     textureID = glGetUniformLocation(programID, "myTextureSampler");
+    useTextureID = glGetUniformLocation(programID, "UseTexture");
+    solidColorID = glGetUniformLocation(programID, "SolidColor");
 
     camera = new SphericalCamera(15.0f, 0.0f, 60.0f);
 
@@ -228,9 +230,9 @@ void Application::render()
     glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &planeModel[0][0]);
     glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(textureID, 0);
+    // Use solid color for the plane
+    glUniform1i(useTextureID, 0);
+    glUniform3f(solidColorID, 0.0f, 0.8f, 0.0f); // Green color
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
@@ -245,6 +247,12 @@ void Application::render()
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    // bind the texture for the heads
+    glUniform1i(useTextureID, 1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(textureID, 0);
 
     // Draw 8 heads
     float radius = 4.0f;
