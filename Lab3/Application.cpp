@@ -80,7 +80,6 @@ void Application::initialize()
     programID = LoadShaders("StandardShading.vertexshader", "StandardShading.fragmentshader");
     texture = loadDDS("uvmap.DDS");
 
-    // materialDiffuseID = glGetUniformLocation(programID, "MaterialDiffuseColor");
     matrixID = glGetUniformLocation(programID, "MVP");
     viewMatrixID = glGetUniformLocation(programID, "V");
     modelMatrixID = glGetUniformLocation(programID, "M");
@@ -209,7 +208,16 @@ void Application::render()
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
     glm::mat4 viewMatrix = camera->getViewMatrix();
 
-    glm::vec3 lightPos = glm::vec3(0, 0, 10);
+    // Elliptical light movement
+    float time = glfwGetTime();
+    float speed = 0.5f;
+    float radiusX = 8.0f;
+    float radiusY = 2.0f;
+    glm::vec3 lightPos = glm::vec3(
+        radiusX * cos(time * speed),
+        radiusY * sin(time * speed),
+        4.0f
+    );
     glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
     glUniform1i(lightEnabledID, lightEnabled ? 1 : 0);
 
@@ -220,7 +228,6 @@ void Application::render()
     glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &planeModel[0][0]);
     glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 
-    // set plane color
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(textureID, 0);
@@ -263,9 +270,6 @@ void Application::render()
         glUniformMatrix4fv(matrixID, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
         glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
-
-        // set color
-        // glUniform3f(materialDiffuseID, 0.8f, 0.7f, 0.6f); // Beige heads
         
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
