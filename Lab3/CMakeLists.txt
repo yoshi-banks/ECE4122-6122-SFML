@@ -43,6 +43,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/common/shader.cpp
     ${PROJECT_SOURCE_DIR}/common/objloader.cpp
     ${PROJECT_SOURCE_DIR}/common/vboindexer.cpp
+    ${PROJECT_SOURCE_DIR}/common/texture.cpp
 )
 
 add_executable(tutorial01_first_window

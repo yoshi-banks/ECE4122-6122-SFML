@@ -17,6 +17,7 @@
 #include "common/shader.hpp"
 #include "common/objloader.hpp"
 #include "common/vboindexer.hpp"
+#include "common/texture.hpp"
 
 Application* Application::instance = nullptr;
 
@@ -77,13 +78,15 @@ void Application::initialize()
     glBindVertexArray(vertexArrayID);
 
     programID = LoadShaders("StandardShading.vertexshader", "StandardShading.fragmentshader");
+    texture = loadDDS("uvmap.DDS");
 
-    materialDiffuseID = glGetUniformLocation(programID, "MaterialDiffuseColor");
+    // materialDiffuseID = glGetUniformLocation(programID, "MaterialDiffuseColor");
     matrixID = glGetUniformLocation(programID, "MVP");
     viewMatrixID = glGetUniformLocation(programID, "V");
     modelMatrixID = glGetUniformLocation(programID, "M");
     lightID = glGetUniformLocation(programID, "LightPosition_worldspace");
     lightEnabledID = glGetUniformLocation(programID, "LightEnabled");
+    textureID = glGetUniformLocation(programID, "myTextureSampler");
 
     camera = new SphericalCamera(15.0f, 0.0f, 60.0f);
 
@@ -218,7 +221,9 @@ void Application::render()
     glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 
     // set plane color
-    glUniform3f(materialDiffuseID, 0.0f, 0.8f, 0.0f); // green
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(textureID, 0);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
@@ -260,7 +265,7 @@ void Application::render()
         glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 
         // set color
-        glUniform3f(materialDiffuseID, 0.8f, 0.7f, 0.6f); // Beige heads
+        // glUniform3f(materialDiffuseID, 0.8f, 0.7f, 0.6f); // Beige heads
         
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -294,6 +299,7 @@ void Application::cleanup()
     glDeleteBuffers(1, &planeUVBuffer);
     glDeleteProgram(programID);
     glDeleteVertexArrays(1, &vertexArrayID);
+    glDeleteTextures(1, &texture);
 
     delete camera;
     glfwTerminate();
