@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add the include directories for OpenAL
 include_directories(${OPENAL_INCLUDE_DIR})
 
+include_directories(${PROJECT_SOURCE_DIR})
 
 # Find packages
 find_package(OpenGL REQUIRED)
@@ -35,10 +36,13 @@ set(OGL_LIBS
 )
 
 set(SOURCES
-    ${PROJECT_SOURCE_DIR}/code/Application.cpp
-    ${PROJECT_SOURCE_DIR}/code/Camera.cpp
-    ${PROJECT_SOURCE_DIR}/code/Shader.cpp
-    ${PROJECT_SOURCE_DIR}/code/Model.cpp
+    ${PROJECT_SOURCE_DIR}/Application.cpp
+    ${PROJECT_SOURCE_DIR}/SphericalCamera.cpp
+    # ${PROJECT_SOURCE_DIR}/code/Shader.cpp
+    # ${PROJECT_SOURCE_DIR}/code/Model.cpp
+    ${PROJECT_SOURCE_DIR}/common/shader.cpp
+    ${PROJECT_SOURCE_DIR}/common/objloader.cpp
+    ${PROJECT_SOURCE_DIR}/common/vboindexer.cpp
 )
 
 add_executable(tutorial01_first_window
@@ -55,6 +59,10 @@ add_executable(${PROJECT_NAME}
     main.cpp 
     ${SOURCES}
 )
+
+# add definitions for the objloader.cpp to load
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ASSIMP)
+
 
 include_directories(${PROJECT_SOURCE_DIR}/../SFML/include)
 

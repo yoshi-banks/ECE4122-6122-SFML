@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "code/Application.hpp"
+#include "Application.hpp"
 
 int main(int argc, char* argv[])
 {
