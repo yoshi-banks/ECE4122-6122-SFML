@@ -103,6 +103,7 @@ void Application::initialize()
     // Load and compile shaders
     programID = LoadShaders("StandardShading.vertexshader", "StandardShading.fragmentshader");
     texture = loadDDS("uvmap.DDS");
+    planeTexture = loadBMP_custom("grass.bmp");
 
     // Get uniform locations from shaders
     matrixID = glGetUniformLocation(programID, "MVP");
@@ -309,8 +310,11 @@ void Application::render()
     glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 
     // Use solid color for the plane
-    glUniform1i(useTextureID, 0);
-    glUniform3f(solidColorID, 0.0f, 0.8f, 0.0f); // Green color
+    glUniform1i(useTextureID, 1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, planeTexture);
+    glUniform1i(textureID, 0);
+    // glUniform3f(solidColorID, 0.0f, 0.8f, 0.0f); // Green color
 
     // Bind plane vertex attributes
     glEnableVertexAttribArray(0);
@@ -412,6 +416,7 @@ void Application::cleanup()
 
     // Delete texture
     glDeleteTextures(1, &texture);
+    glDeleteTextures(1, &planeTexture);
 
     // Deallocate camera object
     delete camera;

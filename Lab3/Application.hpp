@@ -48,6 +48,7 @@ class Application
         GLuint lightID, lightEnabledID;
         GLuint texture, textureID;
         GLuint useTextureID, solidColorID;
+        GLuint planeTexture;
 
         // Suzanne buffers
         GLuint vertexBuffer, uvBuffer, normalBuffer, elementBuffer;
