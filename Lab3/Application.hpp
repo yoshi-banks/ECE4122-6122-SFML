@@ -3,7 +3,13 @@
  * Class: ECE6122 (Q)
  * Last Date Modified: 2025-10-07
  * 
- * @brief: 
+ * @brief: Main Application class for rendering the 3D suzanne monkey heads
+ *         Arranged in a circle on a green plane. An light source takes and 
+ *         elliptical path in the sky above the heads. 
+ * 
+ *         There are interactive camera controls with a - rotate left, d - rotate right, 
+ *         s - zoom out, w - zoom in, up-arrow - rotate up, down-arrow - rotate down, 
+ *         l - toggle lighting
  */
 
 #pragma once
@@ -15,6 +21,9 @@
 
 class SphericalCamera;
 
+/**
+ * @brief: Application class. Runs the Suzanne 8 heads in a circle for Lab3
+ */
 class Application
 {
     public:

@@ -3,14 +3,19 @@
  * Class: ECE6122 (Q)
  * Last Date Modified: 2025-10-09
  * 
- * @brief: 
+ * @brief: Implements a spherical coordinate cmaera system for 3d scene 
+ *         navigation. The camera orbits around a fixed target point
+ *         using spherical coordaintes (radius, azimuth angle, elevation
+ *         angle)
  */
 
 #pragma once
 
 #include <glm/glm.hpp>
 
-
+/**
+ * @brief: Spherical Camera class. Implements 3D scene navigation
+ */
 class SphericalCamera
 {
     public:

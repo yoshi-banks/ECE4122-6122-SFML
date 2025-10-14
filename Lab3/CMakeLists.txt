@@ -46,15 +46,6 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/common/texture.cpp
 )
 
-add_executable(tutorial01_first_window
-    tutorial01.cpp
-)
-
-target_link_libraries(tutorial01_first_window
-    PRIVATE
-    ${OGL_LIBS}
-)
-
 # Create executable
 add_executable(${PROJECT_NAME} 
     main.cpp 
@@ -63,7 +54,6 @@ add_executable(${PROJECT_NAME}
 
 # add definitions for the objloader.cpp to load
 target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ASSIMP)
-
 
 include_directories(${PROJECT_SOURCE_DIR}/../SFML/include)
 
