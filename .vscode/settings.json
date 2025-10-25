@@ -61,7 +61,9 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "list": "cpp",
-    "bitset": "cpp"
+    "bitset": "cpp",
+    "*.hlsl": "cpp",
+    "*.cl": "cpp"
   },
   "cmake.sourceDirectory": "/home/joshua/ECE6122/Lab1",
   // The order to use for the file comment. Values can be used multiple times. Valid values are shown in default setting.
