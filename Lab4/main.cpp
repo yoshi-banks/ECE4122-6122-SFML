@@ -7,6 +7,8 @@
  */
 
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #include "src/heat_solver.cuh"
 
@@ -22,108 +24,120 @@ struct Config
     int numPoints; // number of N x N interior points
     int numIter;   // number of iterations
     bool quitFlag = false;
+    bool valid = true;
 };
 
 /**
  * @brief: Parse command line arguments
  * 
- * @param argc 
- * @param argv 
- * @return Config 
+ * @param input Input string containing arguments
+ * @return Config Configuration with parsed values
  */
-Config parseArguments(int argc, char* argv[])
+Config parseInputLine(const std::string& input)
 {
     Config config;
+    std::istringstream iss(input);
+    std::string token;
 
-    int numPoints = -1;
-    int numIter = -1;
-
-    // Parse command line arguments
-    for (int i = 1; i < argc; i += 2)
+    while (iss >> token)
     {
-        // Exit early if quit flag is found
-        std::string flag = argv[i];
-        if (flag == "-q" || flag == "--quit")
+        if (token == "-q" || token == "--quit")
         {
-            // Quit flag does not require a value
             config.quitFlag = true;
             break;
         }
-
-        // Ensure there is a value for the flag
-        if (i + 1 >= argc)
+        else if (token == "-N")
         {
-            std::cerr << "Error: Missing value for argument " << argv[i] << std::endl;
-            exit(1);
-        }
-        std::string value = argv[i + 1];
-
-        // Parse known flags
-        if (flag == "-N")
-        {
-            numPoints = std::stoi(value);
-            if (numPoints <= 0)
+            int N;
+            if (!(iss >> N) || N <= 0)
             {
-                std::cerr << "Error: Number of interior points must be a positive integer. NumPoints was: " << numPoints << std::endl;
-                exit(1);
+                std::cerr << "Error: Invalid value for -N" << std::endl;
+                config.valid = false;
+                return config;
             }
+            config.numPoints = N;
         }
-        else if (flag == "-I" || flag == "--iterations")
+        else if (token == "-I" || token == "--iterations")
         {
-            numIter = std::stoi(value);
-            if (numIter <= 0)
+            int I;
+            if (!(iss >> I) || I <= 0)
             {
-                std::cerr << "Error: Number of iterations must be a positive integer. NumIter was: " << numIter << std::endl;
-                exit(1);
+                std::cerr << "Error: Invalid value for " << token << std::endl;
+                config.valid = false;
+                return config;
             }
+            config.numIter = I;
         }
         else
         {
-            std::cerr << "Error: Unknown flag " << flag << std::endl;
-            exit(1);
+            std::cerr << "Error: Unknown flag " << token << std::endl;
+            config.valid = false;
+            return config;
         }
     }
-    
-    // Set default values if not set
-    if (numPoints == -1) numPoints = NUM_POINTS_DEFAULT; // default value
-    if (numIter == -1) numIter = NUM_ITER_DEFAULT;    // default value
-
-    std::cout << "N: " << numPoints << ", I: " << numIter << std::endl;
-
-    config.numPoints = numPoints;
-    config.numIter = numIter;
-
     return config;
 }
 
 /**
  * @brief: Main function. Parses arguments, has some console output, and runs the CUDA solver
  * 
- * @param argc 
- * @param argv 
  * @return int 
  */
-int main(int argc, char* argv[])
+int main()
 {
-    Config config = parseArguments(argc, argv);
+    std::cout << "=== 2D Steady State Heat Conduction Solver ===" << std::endl;
+    std::cout << "Default parameters: -N " << NUM_POINTS_DEFAULT 
+              << " -I " << NUM_ITER_DEFAULT << std::endl;
+    std::cout << std::endl;
 
-    if (config.quitFlag)
+    while (true)
     {
-        std::cout << "Program terminated by user." << std::endl;
-        return 0;
+        std::cout << "Enter arguments (e.g. -N 256 -I 10000) or -q to quit: ";
+        std::string inputLine;
+        std::getline(std::cin, inputLine);
+
+        // Skip empty input
+        if (inputLine.empty())
+        {
+            continue;
+        }
+
+        Config config = parseInputLine(inputLine);
+
+        if (config.quitFlag)
+        {
+            std::cout << "Program terminated by user." << std::endl;
+            break;
+        }
+
+        // Skip if parsing failed
+        if (!config.valid)
+        {
+            std::cout << "Please try again." << std::endl;
+            std::cout << std::endl;
+            continue;
+        }
+
+        std::cout << "Starting simulation with:" << std::endl;
+        std::cout << "    Interior Points: " << config.numPoints << " x " << config.numPoints << std::endl;
+        std::cout << "    Iterations: " << config.numIter << std::endl;
+        std::cout << std::endl;
+        
+        try 
+        {
+            // Solve the heat conduction problem using CUDA
+            float executionTime = solveHeatCUDA(config.numPoints, config.numIter, "finalTemperatures.csv");
+
+            // Output the execution time
+            std::cout << std::endl;
+            std::cout << "CUDA Execution Time: " << executionTime << " milliseconds" << std::endl;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "An error occurred during execution: " << e.what() << std::endl;
+        }
+        std::cout << std::endl;
     }
-
-    std::cout << "Starting simulation with:" << std::endl;
-    std::cout << "    Interior Points: " << config.numPoints << std::endl;
-    std::cout << "    Iterations: " << config.numIter << std::endl;
-    std::cout << std::endl;
-
-    // Solve the heat conduction problem using CUDA
-    float executionTime = solveHeatCUDA(config.numPoints, config.numIter, "finalTemperatures.csv");
-
-    // Output the execution time
-    std::cout << std::endl;
-    std::cout << "CUDA Execution Time: " << executionTime << " milliseconds" << std::endl;
 
     return 0;
 }

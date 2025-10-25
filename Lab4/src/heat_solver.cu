@@ -63,16 +63,16 @@ void initializeGrid(double* h, int N)
 {
     int gridSize = N + 2; 
 
-    // Initialize all points to 0
+    // Initialize all points to 20 deg c
     for (int i = 0; i < gridSize; i++)
     {
         for (int j = 0; j < gridSize; j++)
         {
-            h[i * gridSize + j] = 0.0;
+            h[i * gridSize + j] = 20.0;
         }
     }
 
-    // Set boundary conditions
+    // Set boundary conditions (kept here in case of future changes)
     // All edges at 20 deg C
     for (int i = 0; i < gridSize; i++)
     {
