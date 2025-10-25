@@ -1,4 +1,10 @@
-
+/**
+ * Author: Joshua Miller
+ * Class: ECE6122 (Q)
+ * Last Date Modified: 2025-10-25
+ * 
+ * @brief: main function for 2D steady state heat conduction solver using CUDA
+ */
 
 #include <iostream>
 
@@ -7,6 +13,10 @@
 int NUM_POINTS_DEFAULT = 256;
 int NUM_ITER_DEFAULT = 10000;
 
+/**
+ * @brief: Configuration structure to hold command line arguments
+ * 
+ */
 struct Config
 {
     int numPoints; // number of N x N interior points
@@ -14,6 +24,13 @@ struct Config
     bool quitFlag = false;
 };
 
+/**
+ * @brief: Parse command line arguments
+ * 
+ * @param argc 
+ * @param argv 
+ * @return Config 
+ */
 Config parseArguments(int argc, char* argv[])
 {
     Config config;
@@ -24,6 +41,7 @@ Config parseArguments(int argc, char* argv[])
     // Parse command line arguments
     for (int i = 1; i < argc; i += 2)
     {
+        // Exit early if quit flag is found
         std::string flag = argv[i];
         if (flag == "-q" || flag == "--quit")
         {
@@ -32,6 +50,7 @@ Config parseArguments(int argc, char* argv[])
             break;
         }
 
+        // Ensure there is a value for the flag
         if (i + 1 >= argc)
         {
             std::cerr << "Error: Missing value for argument " << argv[i] << std::endl;
@@ -39,6 +58,7 @@ Config parseArguments(int argc, char* argv[])
         }
         std::string value = argv[i + 1];
 
+        // Parse known flags
         if (flag == "-N")
         {
             numPoints = std::stoi(value);
@@ -76,6 +96,13 @@ Config parseArguments(int argc, char* argv[])
     return config;
 }
 
+/**
+ * @brief: Main function. Parses arguments, has some console output, and runs the CUDA solver
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char* argv[])
 {
     Config config = parseArguments(argc, argv);

@@ -1,4 +1,10 @@
-
+/**
+ * Author: Joshua Miller
+ * Class: ECE6122 (Q)
+ * Last Date Modified: 2025-10-25
+ * 
+ * @brief: CUDA implementation of 2D steady state heat conduction solver
+ */
 
 #include <cuda_runtime.h>
 #include <iostream>
@@ -18,7 +24,14 @@
     } \
 } while (0)
 
-// CUDA kernel for Jacobi iteration
+/**
+ * @brief: Jacobi kernel to update temperature grid
+ * 
+ * @param h double array of current temperatures
+ * @param g double array to store updated temperatures
+ * @param N number of interior points per dimension
+ * @return __global__ 
+ */
 __global__ void jacobiKernel(const double* h, double* g, int N)
 {
     // Calculate global thread indices
@@ -40,7 +53,12 @@ __global__ void jacobiKernel(const double* h, double* g, int N)
     }
 }
 
-// Initialize the temperature grid
+/**
+ * @brief: Initialize the temperature grid with boundary conditions
+ * 
+ * @param h double array of temperatures
+ * @param N number of interior points per dimension
+ */
 void initializeGrid(double* h, int N)
 {
     int gridSize = N + 2; 
@@ -76,7 +94,13 @@ void initializeGrid(double* h, int N)
     }
 }
 
-// Write results to CSV file
+/**
+ * @brief: Write temperature grid to CSV file
+ * 
+ * @param h double array of temperatures
+ * @param N number of interior points per dimension
+ * @param filename filename to write results to
+ */
 void writeResultsToCSV(const double* h, int N, const char* filename)
 {
     std::ofstream outFile(filename);
@@ -108,7 +132,14 @@ void writeResultsToCSV(const double* h, int N, const char* filename)
     std::cout << "Results written to " << filename << std::endl;
 }
 
-// Main CUDA solver funtion
+/**
+ * @brief: Solve the 2D heat equation using CUDA
+ * 
+ * @param N number of interior points per dimension
+ * @param numIter number of iterations to perform
+ * @param outputFilename filename to write results to
+ * @return float time taken in milliseconds
+ */
 float solveHeatCUDA(int N, int numIter, const char* outputFilename)
 {
     int gridSize = N + 2; // Total grid size including boundaries

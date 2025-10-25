@@ -1,12 +1,13 @@
+#!/usr/bin/env python3
+
+# Visualize the 2D steady state heat distribution from finalTemperatures.csv
+
 import numpy as np
 import matplotlib
 # Try to use TkAgg backend for WSLg
-try:
-    matplotlib.use('TkAgg')
-    interactive = True
-except:
-    matplotlib.use('Agg')
-    interactive = False
+matplotlib.use('TkAgg')
+interactive = True
+
     
 import matplotlib.pyplot as plt
 
@@ -21,9 +22,5 @@ plt.title('2D Steady State Heat Distribution')
 plt.xlabel('X Position')
 plt.ylabel('Y Position')
 
-if interactive:
-    plt.show()
-    print("Interactive display opened")
-else:
-    plt.savefig('heat_distribution.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved to heat_distribution.png (GUI not available)")
+plt.show()
+print("Interactive display opened")
